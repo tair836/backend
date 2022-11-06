@@ -27,3 +27,13 @@ Content-Type: application/json
     "message": "this is my new message",
     "sender":"123456"
 }
+
+###
+
+PUT http://localhost:3000/post/635e7fdef26bac3499a8c10
+Content-Type: application/json
+
+{
+    "message": "this is my new message",
+    "sender":"123456"
+}
