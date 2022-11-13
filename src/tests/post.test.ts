@@ -1,7 +1,7 @@
-const request = require('supertest')
-const app = require('../server')
-const mongoose = require('mongoose')
-const Post = require('../models/post_model')
+import request from 'supertest'
+import app from '../server'
+import mongoose from 'mongoose'
+import Post from '../models/post_model'
 
 const newPostMessage = 'This is the new test post message'
 const newPostSender = '999000'
@@ -16,8 +16,6 @@ afterAll(async ()=>{
 })
 
 describe("Posts Tests", ()=>{
-
-
     test("add new post",async ()=>{
         const response = await request(app).post('/post').send({
             "message": newPostMessage,
@@ -34,6 +32,4 @@ describe("Posts Tests", ()=>{
         expect(response.body[0].message).toEqual(newPostMessage)
         expect(response.body[0].sender).toEqual(newPostSender)
     })
-
-
 })

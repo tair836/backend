@@ -1,7 +1,8 @@
 
-const Post = require('../models/post_model')
+import Post from '../models/post_model'
+import { Request,Response } from 'express'
 
-const getAllPosts = async (req,res,next)=>{
+const getAllPosts = async (req:Request ,res:Response)=>{
     try{
         let posts = {}
         if (req.query.sender == null){
@@ -15,7 +16,7 @@ const getAllPosts = async (req,res,next)=>{
     }
 }
 
-const getPostById = async (req,res,next)=>{
+const getPostById = async (req:Request,res:Response)=>{
     console.log(req.params.id)
 
     try{
@@ -28,7 +29,7 @@ const getPostById = async (req,res,next)=>{
 
 
 
-const addNewPost = async (req,res,next)=>{
+const addNewPost = async (req:Request,res:Response)=>{
     console.log(req.body)
 
     const post = new Post({
@@ -37,7 +38,7 @@ const addNewPost = async (req,res,next)=>{
     })
 
     try{
-        newPost = await post.save()
+        const newPost = await post.save()
         console.log("save post in db")
         res.status(200).send(newPost)
     }catch (err){
@@ -47,4 +48,4 @@ const addNewPost = async (req,res,next)=>{
 }
 
 
-module.exports = {getAllPosts, addNewPost, getPostById}
+export = {getAllPosts, addNewPost, getPostById}
