@@ -47,6 +47,7 @@ const addNewPost = async (req:Request,res:Response)=>{
     }
 }
 
+
 const putPostById = async (req:Request,res:Response)=>{
     try{
         const post = await Post.findByIdAndUpdate(req.params.id, req.body, {new: true})
