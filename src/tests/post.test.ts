@@ -55,7 +55,7 @@ describe("Posts Tests", ()=>{
         expect(response.body[0].sender).toEqual(newPostSender)
     })
 
-    test("Put - update post by ID",async ()=>{
+    test("update post by ID",async ()=>{
         let response = await request(app).put('/post/' + newPostId).send({
             "message": newPostMessageUpdated,
             "sender": newPostSender
