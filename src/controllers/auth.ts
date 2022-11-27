@@ -3,6 +3,7 @@ import User from '../models/user_model'
 import { NextFunction, Request,Response } from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { use } from '../server'
 
 function sendError(res:Response, error:string){
     res.status(400).send({
@@ -62,26 +63,98 @@ const login = async (req:Request ,res:Response)=>{
             {'expiresIn':process.env.JWT_TOKEN_EXPIRATION}
         )
 
-        return res.status(200).send({'accesstoken': accessToken})
+        const refreshToken = await jwt.sign(
+            {'id': user._id},
+            process.env.REFRESH_TOKEN_SECRET
+        )
+
+        if (user.refresh_tokens == null) user.refresh_tokens = [refreshToken]
+        else user.refresh_tokens.push(refreshToken)
+        await user.save()
+
+        return res.status(200).send({
+            'accesstoken': accessToken,
+            'refreshToken' : refreshToken
+        })
     }catch (err){
         console.log("error: " + err)
         sendError(res,'fail checking user')
     }
 }
 
+function getTokenFromRequest(req:Request): string{
+    const authHeader = req.headers['authorization']
+    if (authHeader == null) return null
+    return authHeader.split(' ')[1]
+}
+
+const refresh = async (req:Request ,res:Response)=>{
+    const refreshToken = getTokenFromRequest(req)
+    if (refreshToken == null) return sendError(res,'authentication missing')
+
+    try{
+        const user = await jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET)
+        const userObj = await User.findById(user.id)
+        if (userObj == null) return sendError(res,'fail validating token')
+
+        if (!userObj.refresh_tokens.includes(refreshToken)){
+            userObj.refresh_tokens = []
+            await userObj.save()
+            return sendError(res,'fail validating token')
+        }
+
+        const newAccessToken = await jwt.sign(
+            {'id': user._id},
+            process.env.ACCESS_TOKEN_SECRET,
+            {'expiresIn':process.env.JWT_TOKEN_EXPIRATION}
+        )
+
+        const newRefreshToken = await jwt.sign(
+            {'id': user._id},
+            process.env.REFRESH_TOKEN_SECRET
+        )
+
+        userObj.refresh_tokens[userObj.refresh_tokens.indexOf(refreshToken)]
+        await userObj.save()
+
+        return res.status(200).send({
+            'accesstoken': newAccessToken,
+            'refreshToken' : newRefreshToken
+        })
+    }catch(err){
+        return sendError(res,'fail validating token')
+    }
+}
+
 const logout = async (req:Request ,res:Response)=>{
-    res.status(400).send({'error':"not implemented"})
+    const refreshToken = getTokenFromRequest(req)
+    if (refreshToken == null) return sendError(res,'authentication missing')
+
+    try{
+        const user = await jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET)
+        const userObj = await User.findById(user.id)
+        if (userObj == null) return sendError(res,'fail validating token')
+
+        if (!userObj.refresh_tokens.includes(refreshToken)){
+            userObj.refresh_tokens = []
+            await userObj.save()
+            return sendError(res,'fail validating token')
+        }
+
+        userObj.refresh_tokens.splice(userObj.refresh_tokens.indexOf(refreshToken),1)
+        await userObj.save()
+        res.status(200).send()
+    }catch(err){
+        return sendError(res,'fail validating token')
+    }
 }
 
 const authenticateMiddleware = async (req:Request ,res:Response, next: NextFunction)=>{
-    const authHeader = req.headers['authorization']
-    if (authHeader == null) return sendError(res,'authentication missing')
-    const token = authHeader.split(' ')[1]
+    const token = getTokenFromRequest(req)
     if (token == null) return sendError(res,'authentication missing')
     try{
         const user = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
-        //TODO: fix ts 
-        //req.userId = user._id
+        req.body.userId = user.id
         console.log("token user: " + user)
         next()
     }catch(err){
@@ -90,4 +163,4 @@ const authenticateMiddleware = async (req:Request ,res:Response, next: NextFunct
 
 }
 
-export = {login, register, logout, authenticateMiddleware}
+export = {login, refresh, register, logout, authenticateMiddleware}
