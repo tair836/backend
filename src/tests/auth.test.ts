@@ -50,7 +50,7 @@ describe("Auth Tests", ()=>{
             "password": userPassword 
         })
         expect(response.statusCode).toEqual(200)
-        accessToken = response.body.accesstoken
+        accessToken = response.body.accessToken
         expect(accessToken).not.toBeNull()
         refreshToken = response.body.refreshToken
         expect(refreshToken).not.toBeNull()
@@ -78,12 +78,12 @@ describe("Auth Tests", ()=>{
         let response = await request(app).get('/auth/refresh').set('Authorization', 'JWT ' + refreshToken);
         expect(response.statusCode).toEqual(200)
 
-        const newAccessToken = response.body.accesstoken
-        expect(newAccessToken).not.toBeNull()
-        const newRefreshToken = response.body.newRefreshToken
-        expect(newRefreshToken).not.toBeNull()
+        accessToken = response.body.accessToken
+        expect(accessToken).not.toBeNull()
+        refreshToken = response.body.refreshToken
+        expect(refreshToken).not.toBeNull()
         
-        response = await request(app).get('/post').set('Authorization', 'JWT ' + newAccessToken);
+        response = await request(app).get('/post').set('Authorization', 'JWT ' + accessToken);
         expect(response.statusCode).toEqual(200)
 
     })

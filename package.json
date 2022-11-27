@@ -8,7 +8,7 @@
     "start": "tsc && node dist/src/app.js",
     "lint": "eslint . --ext .ts",
     "devstart": "nodemon ./src/app.ts",
-    "testAuth": "tsc && jest --detectOpenHandles --forceExit ./dist/src/tests/auth.test.js"
+    "testAuth": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests/auth.test.js"
   },
   "author": "Eliav Menachi",
   "license": "ISC",
