@@ -27,12 +27,15 @@ const register = async (req:Request ,res:Response)=>{
 
         const salt = await bcrypt.genSalt(10)
         const encryptedPwd = await bcrypt.hash(password,salt)
-        let newUser = new User({
+        const newUser = new User({
             'email': email,
             'password': encryptedPwd
         })
-        newUser = await newUser.save()
-        return res.status(200).send(newUser)
+        await newUser.save()
+        return res.status(200).send({
+            'email' : email,
+            '_id' : newUser._id
+        })
     }catch(err){
         return sendError(res,'fail ...')
     }

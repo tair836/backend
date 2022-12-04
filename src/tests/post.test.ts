@@ -5,7 +5,7 @@ import Post from '../models/post_model'
 import User from '../models/user_model'
 
 const newPostMessage = 'This is the new test post message'
-const newPostSender = '999000'
+let newPostSender = ''
 let newPostId = ''
 const newPostMessageUpdated = 'This is the updated message'
 
@@ -16,10 +16,11 @@ let accessToken = ''
 beforeAll(async ()=>{
     await Post.remove()
     await User.remove()
-    await request(app).post('/auth/register').send({
+    const res = await request(app).post('/auth/register').send({
         "email": userEmail,
         "password": userPassword 
     })
+    newPostSender = res.body._id
 })
 
 async function loginUser() {
