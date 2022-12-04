@@ -3,7 +3,6 @@ import User from '../models/user_model'
 import { NextFunction, Request,Response } from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { use } from '../server'
 
 function sendError(res:Response, error:string){
     res.status(400).send({
