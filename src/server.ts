@@ -1,7 +1,13 @@
+
+import dotenv from 'dotenv'
+if (process.env.NODE_ENV == 'test'){
+    dotenv.config({ path: './.testenv' })
+}else{
+    dotenv.config()
+}
+
 import express from 'express'
 const app = express()
-import dotenv from 'dotenv'
-dotenv.config()
 import bodyParser from 'body-parser'
 app.use(bodyParser.urlencoded({extended:true, limit: '1mb'}))
 app.use(bodyParser.json())
