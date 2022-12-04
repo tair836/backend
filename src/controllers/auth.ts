@@ -87,12 +87,15 @@ function getTokenFromRequest(req:Request): string{
     return authHeader.split(' ')[1]
 }
 
+type TokenInfo = {
+    id: string
+}
 const refresh = async (req:Request ,res:Response)=>{
     const refreshToken = getTokenFromRequest(req)
     if (refreshToken == null) return sendError(res,'authentication missing')
 
     try{
-        const user = await jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET)
+        const user: TokenInfo = <TokenInfo>jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET)
         const userObj = await User.findById(user.id)
         if (userObj == null) return sendError(res,'fail validating token')
 
@@ -120,7 +123,7 @@ const logout = async (req:Request ,res:Response)=>{
     if (refreshToken == null) return sendError(res,'authentication missing')
 
     try{
-        const user = await jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET)
+        const user = <TokenInfo>jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET)
         const userObj = await User.findById(user.id)
         if (userObj == null) return sendError(res,'fail validating token')
 
@@ -142,7 +145,7 @@ const authenticateMiddleware = async (req:Request ,res:Response, next: NextFunct
     const token = getTokenFromRequest(req)
     if (token == null) return sendError(res,'authentication missing')
     try{
-        const user = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
+        const user = <TokenInfo>jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
         req.body.userId = user.id
         console.log("token user: " + user)
         return next()
