@@ -8,6 +8,9 @@ if (process.env.NODE_ENV == 'test'){
 
 import express from 'express'
 const app = express()
+import http from 'http';
+const server = http.createServer(app);
+
 import bodyParser from 'body-parser'
 app.use(bodyParser.urlencoded({extended:true, limit: '1mb'}))
 app.use(bodyParser.json())
@@ -45,5 +48,5 @@ if (process.env.NODE_ENV == "development") {
     app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 }
  
-export = app
+export = server
 
