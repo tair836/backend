@@ -28,7 +28,6 @@ app.use('/post',postRouter)
 
 import swaggerUI from "swagger-ui-express"
 import swaggerJsDoc from "swagger-jsdoc"
-
 if (process.env.NODE_ENV == "development") {
     const options = {
         definition: {
