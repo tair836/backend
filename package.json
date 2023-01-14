@@ -7,10 +7,11 @@
     "test": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests",
     "start": "tsc && node dist/src/app.js",
     "lint": "eslint . --ext .ts",
-    "devstart": "nodemon ./src/app.ts",
+    "dev": "nodemon ./src/app.ts",
     "testAuth": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests/auth.test.js",
     "testPost": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests/post.test.js",
-    "testSocket": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests/socket.test.js"
+    "testSocket": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests/socket.test.js",
+    "testStudent": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests/student.test.js"
   },
   "author": "Eliav Menachi",
   "license": "ISC",

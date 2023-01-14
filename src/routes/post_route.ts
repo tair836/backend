@@ -56,7 +56,7 @@ import auth from '../controllers/auth.js'
  *                  $ref: '#/components/schemas/Post'
  *  
  */
-router.get('/',auth.authenticateMiddleware,post.getAllPosts)
+router.get('/', post.getAllPosts)
 
 /**
  * @swagger
@@ -82,7 +82,7 @@ router.get('/',auth.authenticateMiddleware,post.getAllPosts)
  *               $ref: '#/components/schemas/Post'
  *  
  */
-router.get('/:id',auth.authenticateMiddleware,post.getPostById)
+router.get('/:id', auth.authenticateMiddleware, post.getPostById)
 
 /**
  * @swagger
@@ -107,7 +107,7 @@ router.get('/:id',auth.authenticateMiddleware,post.getPostById)
  *               $ref: '#/components/schemas/Post'
  *  
  */
-router.post('/',auth.authenticateMiddleware,post.addNewPost)
+router.post('/', auth.authenticateMiddleware, post.addNewPost)
 
 
 /**
@@ -140,6 +140,6 @@ router.post('/',auth.authenticateMiddleware,post.addNewPost)
  *               $ref: '#/components/schemas/Post'
  *  
  */
-router.put('/:id',auth.authenticateMiddleware,post.putPostById)
+router.put('/:id', auth.authenticateMiddleware, post.putPostById)
 
 export = router

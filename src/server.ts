@@ -1,8 +1,8 @@
 
 import dotenv from 'dotenv'
-if (process.env.NODE_ENV == 'test'){
+if (process.env.NODE_ENV == 'test') {
     dotenv.config({ path: './.testenv' })
-}else{
+} else {
     dotenv.config()
 }
 
@@ -12,22 +12,25 @@ import http from 'http';
 const server = http.createServer(app);
 
 import bodyParser from 'body-parser'
-app.use(bodyParser.urlencoded({extended:true, limit: '1mb'}))
+app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }))
 app.use(bodyParser.json())
 
 import mongoose from "mongoose"
 mongoose.connect(process.env.DATABASE_URL) //,{useNewUrlParser:true})
 const db = mongoose.connection
-db.on('error',error=>{console.error(error)})
-db.once('open',()=>{console.log('connected to mongo DB')})
+db.on('error', error => { console.error(error) })
+db.once('open', () => { console.log('connected to mongo DB') })
 
-app.use('/public',express.static('public'))
+app.use('/public', express.static('public'))
 
 import authRouter from './routes/auth_route.js'
-app.use('/auth',authRouter)
+app.use('/auth', authRouter)
 
 import postRouter from './routes/post_route.js'
-app.use('/post',postRouter)
+app.use('/post', postRouter)
+
+import studentRouter from './routes/student_route.js'
+app.use('/student', studentRouter)
 
 import swaggerUI from "swagger-ui-express"
 import swaggerJsDoc from "swagger-jsdoc"
@@ -40,13 +43,13 @@ if (process.env.NODE_ENV == "development") {
                 version: "1.0.0",
                 description: "REST server including authentication using JWT",
             },
-            servers: [{url: "http://localhost:3000",},],
+            servers: [{ url: "http://localhost:3000", },],
         },
         apis: ["./src/routes/*.ts"],
     };
     const specs = swaggerJsDoc(options);
     app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 }
- 
+
 export = server
 
