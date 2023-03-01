@@ -1,15 +1,20 @@
 import mongoose from 'mongoose'
 
 const postSchema = new mongoose.Schema({
-    message:{
-        type: String,
-        required: true
-    },
-    sender: {
-        type: String,
-        required: true
-    }
+	body: {
+		type: String,
+	},
+	name: {
+		type: String,
+		required: true,
+	},
+	imageURL: {
+		type: String,
+	},
+	email: {
+		type: String,
+		required: true,
+	},
 })
 
-export = mongoose.model('Post',postSchema)
-
+export default mongoose.model('Post', postSchema)

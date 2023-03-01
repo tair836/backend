@@ -21,17 +21,18 @@ const db = mongoose.connection
 db.on('error', error => { console.error(error) })
 db.once('open', () => { console.log('connected to mongo DB') })
 
+
 app.use('/public', express.static('public'))
 app.use('/uploads', express.static('uploads'))
 
-import authRouter from './routes/auth_route.js'
+import authRouter from './routes/auth_route'
 app.use('/auth', authRouter)
 
-import postRouter from './routes/post_route.js'
-app.use('/post', postRouter)
+// import postRouter from './routes/post_route.js'
+// app.use('/post', postRouter)
 
-import studentRouter from './routes/student_route.js'
-app.use('/student', studentRouter)
+// import usertRouter from './routes/user_route.js'
+// app.use('/user', usertRouter)
 
 import fileRouter from './routes/file_route.js'
 app.use('/file', fileRouter)

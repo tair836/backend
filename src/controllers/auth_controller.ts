@@ -1,36 +1,51 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 
 import User from '../models/user_model'
 import { NextFunction, Request,Response } from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
+
 function sendError(res:Response, error:string){
     res.status(400).send({
         'err': error
     })
 }
+const encryptPassword = async function (password: string) {
+	const salt = await bcrypt.genSalt(10)
+	return await bcrypt.hash(password, salt)
+}
+function getTokenFromRequest(req:Request): string{
+    const authHeader = req.headers['authorization']
+    if (authHeader == null) return null
+    return authHeader.split(' ')[1]
+}
+type TokenInfo = {
+    id: string
+}
 
 const register = async (req:Request ,res:Response)=>{
+    console.log('regiser', req.body)
     const email = req.body.email
     const password = req.body.password
+    const avatarUrl = req.body.avatarUrl
 
-    if (email == null || password == null){
+    if (email == null || password == null || avatarUrl == null){
         return sendError(res, 'please provide valid email and password')
     }
-
     try{
         const user = await User.findOne({'email' : email})
         if (user != null){
             return sendError(res,'user already registered, try a different name')
         }
-
-        const salt = await bcrypt.genSalt(10)
-        const encryptedPwd = await bcrypt.hash(password,salt)
+        const encryptPwd = await encryptPassword(password)
         const newUser = new User({
             'email': email,
-            'password': encryptedPwd
+            'password': encryptPwd,
+            'avatarUrl': avatarUrl
         })
-        await newUser.save()
+    	await newUser.save()
+        console.log("save the user in db")
         return res.status(200).send({
             'email' : email,
             '_id' : newUser._id
@@ -50,11 +65,11 @@ async function generateTokens(userId:string){
         {'id': userId},
         process.env.REFRESH_TOKEN_SECRET
     )
-
     return {'accessToken':accessToken, 'refreshToken':refreshToken}
 }
 
 const login = async (req:Request ,res:Response)=>{
+    console.log('login', req.body)
     const email = req.body.email
     const password = req.body.password
     if (email == null || password == null){
@@ -64,31 +79,19 @@ const login = async (req:Request ,res:Response)=>{
     try{
         const user = await User.findOne({'email' : email})
         if (user == null) return sendError(res,'incorrect user or password')
-
         const match = await bcrypt.compare(password, user.password)
         if(!match) return sendError(res,'incorrect user or password')
 
         const tokens = await generateTokens(user._id.toString())
-
+        console.log(user._id.toString(), user._id)
         if (user.refresh_tokens == null) user.refresh_tokens = [tokens.refreshToken]
         else user.refresh_tokens.push(tokens.refreshToken)
         await user.save()
-
-        return res.status(200).send(tokens)
+        return res.status(200).send({tokens:tokens, userId: user._id.toString()})
     }catch (err){
         console.log("error: " + err)
         return sendError(res,'fail checking user')
     }
-}
-
-function getTokenFromRequest(req:Request): string{
-    const authHeader = req.headers['authorization']
-    if (authHeader == null) return null
-    return authHeader.split(' ')[1]
-}
-
-type TokenInfo = {
-    id: string
 }
 
 const refresh = async (req:Request ,res:Response)=>{
@@ -97,7 +100,7 @@ const refresh = async (req:Request ,res:Response)=>{
 
     try{
         const user: TokenInfo = <TokenInfo>jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET)
-        const userObj = await User.findById(user.id)
+        const userObj: any = await User.findById(user.id)
         if (userObj == null) return sendError(res,'fail validating token')
 
         if (!userObj.refresh_tokens.includes(refreshToken)){
@@ -109,8 +112,6 @@ const refresh = async (req:Request ,res:Response)=>{
         const tokens = await generateTokens(userObj._id.toString())
 
         userObj.refresh_tokens[userObj.refresh_tokens.indexOf(refreshToken)] = tokens.refreshToken
-        console.log("refresh token: " + refreshToken)
-        console.log("with token: " + tokens.refreshToken)
         await userObj.save()
 
         return res.status(200).send(tokens)
@@ -120,12 +121,16 @@ const refresh = async (req:Request ,res:Response)=>{
 }
 
 const logout = async (req:Request ,res:Response)=>{
+    console.log('logout')
     const refreshToken = getTokenFromRequest(req)
-    if (refreshToken == null) return sendError(res,'authentication missing')
+    if (refreshToken == null){ 
+        console.log('prob')
+        return sendError(res,'authentication missing')}
 
     try{
         const user = <TokenInfo>jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET)
-        const userObj = await User.findById(user.id)
+        const userObj: any = await User.findById(user.id)
+        console.log('userrr', userObj)
         if (userObj == null) return sendError(res,'fail validating token')
 
         if (!userObj.refresh_tokens.includes(refreshToken)){
@@ -142,18 +147,48 @@ const logout = async (req:Request ,res:Response)=>{
     }
 }
 
-const authenticateMiddleware = async (req:Request ,res:Response, next: NextFunction)=>{
+const getUserById = async (req: Request, res: Response) => {
+    console.log('getUserById', req.params.id)
+    try {
+        const user = await User.findById(req.params.id)
+        res.status(200).send(user)
+    } catch (err) {
+        res.status(400).send({ 'error': "fail to get user from db" })
+    }
+}
+
+const updateUserById = async (req: Request, res: Response) => {
+    console.log("updateUserById")
+    if (req.body.password != undefined) {
+        req.body.password = await encryptPassword(req.body.password)
+    }
+
+    try {
+        const user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true, })
+        console.log("update post in db");
+        res.status(200).send(user);
+    } catch (err) {
+        console.log("fail to update post in db");
+        res.status(400).send({ error: "fail to update post in db" });
+    }
+}
+
+const authenticateMiddleware = async (req:Request, res:Response, next:NextFunction)=>{
     const token = getTokenFromRequest(req)
-    if (token == null) return sendError(res,'authentication missing')
-    try{
+    if(token == null) return sendError(res,'authentication missing')
+
+    try {
         const user = <TokenInfo>jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
         req.body.userId = user.id
         console.log("token user: " + user)
         return next()
-    }catch(err){
-        return sendError(res,'fail validating token')
+    }catch(err) {
+        console.log("invalid token need to return 100 status")
+        return res.status(410).send({
+            'err': 'failed validating token'
+        }) 
     }
-
 }
 
-export = {login, refresh, register, logout, authenticateMiddleware}
+
+export = {login, refresh, register, logout, getUserById, updateUserById, authenticateMiddleware}

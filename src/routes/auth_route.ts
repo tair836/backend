@@ -1,8 +1,6 @@
-
-
 import express from 'express'
 const router = express.Router()
-import auth from '../controllers/auth.js'
+import auth from '../controllers/auth_controller'
 
 /**
 * @swagger
@@ -37,6 +35,9 @@ import auth from '../controllers/auth.js'
 *         password:
 *           type: string
 *           description: The user password
+*         imageUrl:
+*           type: string
+*           description: The user image
 *       example:
 *         email: 'bob@gmail.com'
 *         password: '123456'
@@ -71,9 +72,7 @@ import auth from '../controllers/auth.js'
  *                 description: The error description 
  *  
  */
-router.post('/register',auth.register)
-
-
+router.post('/register', auth.register)
 /**
  * @swagger
  * /auth/login:
@@ -103,8 +102,7 @@ router.post('/register',auth.register)
  *               refresh_token: '123456...'
  *
  */
-router.post('/login',auth.login)
-
+ router.post('/login', auth.login)
 
 /**
  * @swagger
@@ -131,10 +129,8 @@ router.post('/login',auth.login)
  *               refresh_token: '123456...'
  *
  */
-router.get('/refresh',auth.refresh)
-
-
-/**
+router.get('/refresh', auth.refresh)
+ /**
  * @swagger
  * /auth/logout:
  *   get:
@@ -147,9 +143,66 @@ router.get('/refresh',auth.refresh)
  *         description: logout sucess, refresh token is invalidated
  *
  */
-router.get('/logout',auth.logout)
+router.get('/logout', auth.logout)
+
+/**
+ * @swagger
+ * /post/{id}:
+ *   get:
+ *     summary: get user by id
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         requiered: true
+ *         schema:
+ *           type: string
+ *           description: the requested user id
+ *     responses:
+ *       200:
+ *         description: the requested post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *  
+ */
+router.get('/:id', auth.authenticateMiddleware, auth.getUserById) 
+
+/**
+ * @swagger
+ * /post/{id}:
+ *   put:
+ *     summary: update existing user by id
+ *     tags: [Post]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         requiered: true
+ *         schema:
+ *           type: string
+ *           description: the updated user id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Post'
+ *     responses:
+ *       200:
+ *         description: the requested user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *
+ */
+
+ router.put("/:id", auth.authenticateMiddleware, auth.updateUserById);
+
 
 export = router
-
-
-
