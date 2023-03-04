@@ -4,13 +4,13 @@ import mongoose from 'mongoose'
 import fs from 'mz/fs';
 
 
-beforeAll(async () => {
+beforeAll(() => {
     console.log('beforeAll')
 })
 
-afterAll(async () => {
+afterAll(async() => {
     console.log('afterAll')
-    mongoose.connection.close()
+    await mongoose.connection.close()
 })
 
 jest.setTimeout(30000)
@@ -20,8 +20,7 @@ describe("File Tests", () => {
         const filePath = `${__dirname}/avatar.png`;
         const rs = await fs.exists(filePath)
         if (rs) {
-            const response = await request(app)
-                .post("/file/file?file=123.jpeg").attach('file', filePath)
+            const response = await request(app).post("/file/file?file=123.jpeg").attach('file', filePath)
             expect(response.statusCode).toEqual(200);
         }
     })

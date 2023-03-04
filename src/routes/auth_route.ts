@@ -1,6 +1,6 @@
 import express from 'express'
 const router = express.Router()
-import auth from '../controllers/auth_controller'
+import auth from '../controllers/auth.js'
 
 /**
 * @swagger
@@ -28,6 +28,8 @@ import auth from '../controllers/auth_controller'
 *       required:
 *         - email
 *         - password
+*         - imageUrl
+*         - name
 *       properties:
 *         email:
 *           type: string
@@ -35,13 +37,19 @@ import auth from '../controllers/auth_controller'
 *         password:
 *           type: string
 *           description: The user password
-*         imageUrl:
+*         name:
 *           type: string
-*           description: The user image
+*           description: The user name
+*         image:
+*           type: string
+*           description: The user's profile picture url
 *       example:
 *         email: 'bob@gmail.com'
 *         password: '123456'
+*         name: 'Bob'
+*         image: ''
 */
+
 
 /**
  * @swagger
@@ -73,6 +81,8 @@ import auth from '../controllers/auth_controller'
  *  
  */
 router.post('/register', auth.register)
+
+
 /**
  * @swagger
  * /auth/login:
@@ -102,7 +112,22 @@ router.post('/register', auth.register)
  *               refresh_token: '123456...'
  *
  */
- router.post('/login', auth.login)
+router.post('/login', auth.login)
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   get:
+ *     summary: logout user invalidate refresh token
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: logout sucess, refresh token is invalidated
+ *
+ */
+router.get('/logout', auth.logout)
 
 /**
  * @swagger
@@ -130,24 +155,13 @@ router.post('/register', auth.register)
  *
  */
 router.get('/refresh', auth.refresh)
- /**
- * @swagger
- * /auth/logout:
- *   get:
- *     summary: logout user invalidate refresh token
- *     tags: [Auth]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: logout sucess, refresh token is invalidated
- *
- */
-router.get('/logout', auth.logout)
+
+
+
 
 /**
  * @swagger
- * /post/{id}:
+ * /auth/{id}:
  *   get:
  *     summary: get user by id
  *     tags: [Auth]
@@ -162,21 +176,24 @@ router.get('/logout', auth.logout)
  *           description: the requested user id
  *     responses:
  *       200:
- *         description: the requested post
+ *         description: the requested user
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *  
+ *
  */
 router.get('/:id', auth.authenticateMiddleware, auth.getUserById) 
+// TODO - need to add test for getUserById in the auth.test.ts
+
+
 
 /**
  * @swagger
- * /post/{id}:
+ * /auth/{id}:
  *   put:
- *     summary: update existing user by id
- *     tags: [Post]
+ *     summary: update user by id
+ *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -186,23 +203,15 @@ router.get('/:id', auth.authenticateMiddleware, auth.getUserById)
  *         schema:
  *           type: string
  *           description: the updated user id
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Post'
  *     responses:
  *       200:
- *         description: the requested user
+ *         description: the updated user
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
  *
  */
-
- router.put("/:id", auth.authenticateMiddleware, auth.updateUserById);
-
+router.put("/:id", auth.authenticateMiddleware, auth.putUserById);
 
 export = router

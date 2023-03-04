@@ -1,7 +1,11 @@
 import mongoose from 'mongoose'
 
-const UserSchema = new mongoose.Schema({
-	email:{
+const userSchema = new mongoose.Schema({
+    email:{
+        type: String,
+        required: true
+    },
+    name:{
         type: String,
         required: true
     },
@@ -9,13 +13,13 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    avatarUrl: {
+    imageUrl: {
         type: String,
-        required: true
+        //required: true
     },
     refresh_tokens: {
         type: [String]
     }
 })
 
-export default mongoose.model('User', UserSchema)
+export = mongoose.model('User',userSchema)

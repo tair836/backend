@@ -6,6 +6,7 @@ if (process.env.NODE_ENV == 'test') {
     dotenv.config()
 }
 
+
 import express from 'express'
 const app = express()
 import http from 'http';
@@ -28,11 +29,8 @@ app.use('/uploads', express.static('uploads'))
 import authRouter from './routes/auth_route'
 app.use('/auth', authRouter)
 
-// import postRouter from './routes/post_route.js'
-// app.use('/post', postRouter)
-
-// import usertRouter from './routes/user_route.js'
-// app.use('/user', usertRouter)
+import postRouter from './routes/post_route.js'
+app.use('/post', postRouter)
 
 import fileRouter from './routes/file_route.js'
 app.use('/file', fileRouter)

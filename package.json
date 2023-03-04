@@ -11,8 +11,7 @@
     "testAuth": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests/auth.test.js",
     "testPost": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests/post.test.js",
     "testSocket": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests/socket.test.js",
-    "testFile": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests/file.test.js",
-    "testUser": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests/user.test.js"
+    "testFile": "tsc && jest --detectOpenHandles --forceExit --runInBand ./dist/src/tests/file.test.js"
   },
   "author": "Eliav Menachi",
   "license": "ISC",
