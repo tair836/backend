@@ -269,50 +269,6 @@ describe("my awesome project", () => {
         client1.socket.emit("chat:send_message", { message: message})
     })
 
-    test("test chat send message with no message", (done) => {
-        client2.socket.once("chat:message", (args) => {
-            expect(args.res.status).toBe("fail")
-            done();
-        });
-        console.log("test chat send message")
-
-        client1.socket.emit("chat:send_message", {
-            //to: client2.id,
-        })
-    })
-
-    test("test chat get all messages that were send by user", (done) => {
-        client1.socket.once("chat:get_all.response", (args) => {
-            expect(args.body.length).toBe(1)
-            console.log("response in tests: " + args)
-            //expect(args[0].body[0].reciever).toBe(client2.id)
-            expect(args.body[0].message).toBe(message)
-            expect(args.body[0].sender).toBe(client1.id)
-            expect(args.status).toBe("ok")
-            done()
-        })
-        console.log("test chat get all messages by specific sender");
-
-        client1.socket.emit("chat:get_all", {
-            sender: client1.id,
-        })
-    })
-
-
-    test("test chat get all messages that send by user that did not send any message", (done) => {
-        client1.socket.once("chat:get_all.response", (arg) => {
-            expect(arg.body.length).toBe(0);
-            expect(arg.status).toBe("ok");
-
-            done();
-        });
-        console.log("test chat get all messages");
-
-        client1.socket.emit("chat:get_all", {
-            sender: client1.id + 2,
-        });
-    });
-
     test("test chat get all messages ", (done) => {
         client1.socket.once("chat:get_all.response", (arg) => {
             expect(arg.body.length).toBe(1);

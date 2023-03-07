@@ -73,7 +73,7 @@ export = (io:Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>,
             socket.data.user
         )
         try {
-            const response = await postController.putPostById(
+            const response = await postController.updatePostById(
                 new request(body, socket.data.user, null, body)
             );
             console.log("trying to send post:put.response")

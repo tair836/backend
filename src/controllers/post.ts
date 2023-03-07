@@ -61,11 +61,13 @@ const addNewPost = async (req: request)=>{
     }
 }
 
-const putPostById = async (req:request)=>{
+const updatePostById = async (req:request)=>{
+    console.log("updatePostById")
     try{
-        console.log("putPostById")
-        console.log(req)
+        console.log('tairrrrr',req)
+        console.log('req.body', req.body)
         const post = await Post.findByIdAndUpdate(req.params.id, req.body, {new: true})
+        console.log(post)
         return new response(post, req.userId, null)
     }catch (err){
         console.log("fail to update post in db")
@@ -74,6 +76,7 @@ const putPostById = async (req:request)=>{
 }
 
 const deletePostById = async (req: request) => {
+    console.log('2222?')
     console.log(req.params.id);
     try {
         await Post.findByIdAndDelete(req.params.id);
@@ -87,4 +90,4 @@ const deletePostById = async (req: request) => {
 };
 
 
-export = {getAllPosts, addNewPost, getPostById, putPostById, deletePostById}
+export = {getAllPosts, addNewPost, getPostById, updatePostById, deletePostById}

@@ -181,8 +181,9 @@ router.post("/", auth.authenticateMiddleware, async (req, res) => {
  *  
  */
 router.put("/:id", auth.authenticateMiddleware, async (req, res) => {
+    console.log("updatePostById here")
     try {
-        const response = await post.putPostById(request.fromRestRequest(req))
+        const response = await post.updatePostById(request.fromRestRequest(req))
         response.sendRestResponse(res);
     } catch (err) {
         res.status(400).send({
@@ -219,6 +220,7 @@ router.put("/:id", auth.authenticateMiddleware, async (req, res) => {
  */
 
 router.delete("/:id", auth.authenticateMiddleware, async (req, res) => {
+    console.log('1111?')
     try {
         const response = await post.deletePostById(
             request.fromRestRequest(req)
