@@ -180,18 +180,20 @@ router.post("/", auth.authenticateMiddleware, async (req, res) => {
  *               $ref: '#/components/schemas/Post'
  *  
  */
-router.put("/:id", auth.authenticateMiddleware, async (req, res) => {
-    console.log("updatePostById here")
-    try {
-        const response = await post.updatePostById(request.fromRestRequest(req))
-        response.sendRestResponse(res);
-    } catch (err) {
-        res.status(400).send({
-            status: "fail",
-            message: err.message,
-        })
-    }
-})
+// router.put("/:id", auth.authenticateMiddleware, async (req, res) => {
+//     console.log("updatePostById here")
+//     try {
+//         const response = await post.updatePostById(request.fromRestRequest(req))
+//         response.sendRestResponse(res);
+//     } catch (err) {
+//         res.status(400).send({
+//             status: "fail",
+//             message: err.message,
+//         })
+//     }
+// })
+
+router.put("/:id", auth.authenticateMiddleware, post.updatePostById);
 
 
 /**

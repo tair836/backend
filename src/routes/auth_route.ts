@@ -212,6 +212,6 @@ router.get('/:id', auth.authenticateMiddleware, auth.getUserById)
  *               $ref: '#/components/schemas/User'
  *
  */
-router.put("/:id", auth.authenticateMiddleware, auth.putUserById);
+router.put("/:id", auth.authenticateMiddleware, auth.updateUserById);
 
 export = router

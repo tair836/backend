@@ -183,8 +183,8 @@ const getUserById = async (req: Request, res: Response) => {
     }
 }
 
-const putUserById = async (req: Request, res: Response) => {
-    console.log("in putUserById");
+const updateUserById = async (req: Request, res: Response) => {
+    console.log("in updateUserById");
     console.log(req.params.id);
     console.log(req.body.password);
     if (req.body.password != undefined) {
@@ -213,16 +213,13 @@ const authenticateMiddleware = async (req:Request, res:Response, next:NextFuncti
     try {
         const user = <TokenInfo>jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
         req.body.userId = user.id
-        console.log("token user: " + user)
+        console.log("token user:")
         return next()
     }catch(err) {
-        console.log("invalid token need to return 100 status")
-        return res.status(410).send({
-            'err': 'failed validating token'
-        }) 
+        return res.status(410).send({'err': 'failed validating token'}) 
     }
 }
 
-export = {login, register, logout, refresh, authenticateMiddleware, getUserById, putUserById}
+export = {login, register, logout, refresh, authenticateMiddleware, getUserById, updateUserById}
 
 
