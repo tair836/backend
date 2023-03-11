@@ -216,6 +216,7 @@ const authenticateMiddleware = async (req:Request, res:Response, next:NextFuncti
         console.log("token user:")
         return next()
     }catch(err) {
+        console.log('problem??')
         return res.status(410).send({'err': 'failed validating token'}) 
     }
 }

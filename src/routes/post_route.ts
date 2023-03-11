@@ -103,6 +103,7 @@ router.get("/", auth.authenticateMiddleware, async (req, res) => {
  *  
  */
 router.get("/:id", auth.authenticateMiddleware, async (req, res) => {
+    console.log('!!!')
     try {
         const response = await post.getPostById(request.fromRestRequest(req))
         response.sendRestResponse(res)
@@ -113,6 +114,9 @@ router.get("/:id", auth.authenticateMiddleware, async (req, res) => {
         })
     }
 })
+
+// router.put("/:id", auth.authenticateMiddleware, post.updatePostById);
+
 
 /**
  * @swagger
@@ -180,20 +184,18 @@ router.post("/", auth.authenticateMiddleware, async (req, res) => {
  *               $ref: '#/components/schemas/Post'
  *  
  */
-// router.put("/:id", auth.authenticateMiddleware, async (req, res) => {
-//     console.log("updatePostById here")
-//     try {
-//         const response = await post.updatePostById(request.fromRestRequest(req))
-//         response.sendRestResponse(res);
-//     } catch (err) {
-//         res.status(400).send({
-//             status: "fail",
-//             message: err.message,
-//         })
-//     }
-// })
-
-router.put("/:id", auth.authenticateMiddleware, post.updatePostById);
+router.put("/:id",  async (req, res) => {
+    console.log("updatePostById here")
+    try {
+        const response = await post.updatePostById(request.fromRestRequest(req))
+        response.sendRestResponse(res);
+    } catch (err) {
+        res.status(400).send({
+            status: "fail",
+            message: err.message,
+        })
+    }
+})
 
 
 /**

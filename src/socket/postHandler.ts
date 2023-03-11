@@ -67,7 +67,7 @@ export = (io:Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>,
         }
     }
 
-    const updatePostById = async (body) => {
+    const updatePostById = async (body) => {    
         console.log(
             "update post by id handler with socketId: %s",
             socket.data.user

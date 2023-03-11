@@ -14,6 +14,7 @@ const getAllPosts = async (req:request) => {
         console.log(req)
         if (req.query != null && req.query.sender != null) {
             posts = await Post.find({ sender: req.query.sender })
+            console.log('posts', posts)
         } else {
             posts = await Post.find()
         }
@@ -26,7 +27,7 @@ const getAllPosts = async (req:request) => {
 
 
 const getPostById = async (req:request)=>{
-    console.log(req.params.id)
+    console.log('???',req.params.id)
 
     try {
         const posts = await Post.findById(req.params.id)
@@ -64,8 +65,6 @@ const addNewPost = async (req: request)=>{
 const updatePostById = async (req:request)=>{
     console.log("updatePostById")
     try{
-        console.log('tairrrrr',req)
-        console.log('req.body', req.body)
         const post = await Post.findByIdAndUpdate(req.params.id, req.body, {new: true})
         console.log(post)
         return new response(post, req.userId, null)
